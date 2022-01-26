@@ -1,22 +1,19 @@
 package com.juarez.upaxdemo.api
 
-import com.juarez.upaxdemo.models.Movie
-import com.juarez.upaxdemo.models.MovieResponse
+import com.juarez.upaxdemo.data.models.Movie
+import com.juarez.upaxdemo.data.models.MovieResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
-import retrofit2.http.Query
 
-interface MoviesAPI {
+interface MovieAPI {
 
-    @GET("/3/movie/popular")
+    @GET("popular")
     suspend fun getPopularMovies(): Response<MovieResponse>
 
-    @GET("/3/movie/top_rated")
+    @GET("top_rated")
     suspend fun getTopRatedMovies(): Response<MovieResponse>
 
-    @GET("/3/movie/{movie_id}")
-    suspend fun getMovieDetail(
-        @Path("movie_id") movieId: Int,
-    ): Response<Movie>
+    @GET("{movie_id}")
+    suspend fun getMovieDetail(@Path("movie_id") movieId: Int): Response<Movie>
 }

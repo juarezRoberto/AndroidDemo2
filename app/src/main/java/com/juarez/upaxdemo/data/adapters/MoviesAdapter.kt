@@ -1,4 +1,4 @@
-package com.juarez.upaxdemo.adapters
+package com.juarez.upaxdemo.data.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,9 +7,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.juarez.upaxdemo.R
-import com.juarez.upaxdemo.models.Movie
-import com.juarez.upaxdemo.utils.Constants
-import com.squareup.picasso.Picasso
+import com.juarez.upaxdemo.data.models.Movie
+import com.juarez.upaxdemo.utils.loadPosterImage
 
 class MoviesAdapter(
     private val movies: ArrayList<Movie>,
@@ -38,20 +37,11 @@ class MoviesAdapter(
         return ViewHolder(view)
     }
 
-//    inner class ViewHolder(val binding: ItemMovieBinding) : RecyclerView.ViewHolder(binding.root)
-
-//    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-//        val binding = ItemMovieBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-//        return ViewHolder(binding)
-//    }
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         with(holder) {
             with(movies[position]) {
                 txtTitle.text = title
-                Picasso.get()
-                    .load("${Constants.IMG_BASE_URL}$poster_path")
-                    .into(imgPoster)
+                imgPoster.loadPosterImage(poster_path)
             }
             itemView.setOnClickListener { onItemClicked(movies[position]) }
         }

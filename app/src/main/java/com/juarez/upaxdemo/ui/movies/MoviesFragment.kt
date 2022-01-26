@@ -1,42 +1,33 @@
-package com.juarez.upaxdemo.ui
+package com.juarez.upaxdemo.ui.movies
 
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.juarez.upaxdemo.adapters.MoviesAdapter
+import com.juarez.upaxdemo.data.adapters.MoviesAdapter
+import com.juarez.upaxdemo.data.models.Movie
 import com.juarez.upaxdemo.databinding.FragmentMoviesBinding
-import com.juarez.upaxdemo.models.Movie
-import com.juarez.upaxdemo.repositories.MovieRepository
-import com.juarez.upaxdemo.viewmodels.MoviesViewModel
-import com.juarez.upaxdemo.viewmodels.MoviesViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MoviesFragment : Fragment() {
-    private val TAG: String = "MoviesFragment"
     private var _binding: FragmentMoviesBinding? = null
     private val binding get() = _binding!!
-    private lateinit var viewModel: MoviesViewModel
+    private val viewModel: MoviesViewModel by activityViewModels()
     private val popularMoviesAdapter = MoviesAdapter(arrayListOf()) { onItemClicked(it) }
     private val topMoviesAdapter = MoviesAdapter(arrayListOf()) { onItemClicked(it) }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate")
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentMoviesBinding.inflate(inflater, container, false)
-        val provider = MoviesViewModelFactory(MovieRepository())
-        viewModel = ViewModelProvider(this, provider).get(MoviesViewModel::class.java)
+
         // init views
         binding.recyclerPopularMovies.apply {
             layoutManager =
@@ -48,12 +39,12 @@ class MoviesFragment : Fragment() {
                 LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             adapter = topMoviesAdapter
         }
-        binding.btnRetry.isVisible = false
+        shouldShowErrorOptions()
         binding.btnRetry.setOnClickListener {
-            viewModel.getMovies()
+            shouldShowErrorOptions()
+            viewModel.getPopularMovies()
             viewModel.getTopMovies()
         }
-        viewModel.getMovies()
         // observers
         viewModel.popularMovies.observe(viewLifecycleOwner, {
             popularMoviesAdapter.updateData(it)
@@ -65,27 +56,27 @@ class MoviesFragment : Fragment() {
             binding.progressBarMovies.isVisible = it
         })
         viewModel.error.observe(viewLifecycleOwner, {
-            binding.btnRetry.isVisible = true
+            if (!it.isNullOrEmpty()) {
+                shouldShowErrorOptions(true)
+                binding.txtMoviesError.text = it
+            }
         })
 
         return binding.root
     }
 
+    private fun shouldShowErrorOptions(visible: Boolean = false) {
+        binding.btnRetry.isVisible = visible
+        binding.txtMoviesError.isVisible = visible
+    }
+
     private fun onItemClicked(movie: Movie) {
-        activity.let {
-            val intent = Intent(it, MovieDetailActivity::class.java)
-            intent.putExtra("movie_id", movie.id)
-            startActivity(intent)
-        }
+        val action = MoviesFragmentDirections.actionMoviesFragmentToMovieDetailFragment(movie.id)
+        findNavController().navigate(action)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance() = MoviesFragment()
     }
 }

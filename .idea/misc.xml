@@ -3,12 +3,15 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/JUAREZ/Documents/myworkspace/android/UpaxDemo/app/src/main/res/layout/activity_main.xml" value="0.25416666666666665" />
-        <entry key="..\:/Users/JUAREZ/Documents/myworkspace/android/UpaxDemo/app/src/main/res/layout/activity_movie_detail.xml" value="0.4" />
+        <entry key="..\:/Users/JUAREZ/Documents/myworkspace/android/UpaxDemo/app/src/main/res/drawable-hdpi/background_black_gradient.xml" value="0.2703125" />
+        <entry key="..\:/Users/JUAREZ/Documents/myworkspace/android/UpaxDemo/app/src/main/res/layout/activity_main.xml" value="0.264" />
+        <entry key="..\:/Users/JUAREZ/Documents/myworkspace/android/UpaxDemo/app/src/main/res/layout/activity_movie_detail.xml" value="0.264" />
         <entry key="..\:/Users/JUAREZ/Documents/myworkspace/android/UpaxDemo/app/src/main/res/layout/fragment_map.xml" value="0.25416666666666665" />
-        <entry key="..\:/Users/JUAREZ/Documents/myworkspace/android/UpaxDemo/app/src/main/res/layout/fragment_movies.xml" value="0.536" />
+        <entry key="..\:/Users/JUAREZ/Documents/myworkspace/android/UpaxDemo/app/src/main/res/layout/fragment_movie_detail.xml" value="0.4" />
+        <entry key="..\:/Users/JUAREZ/Documents/myworkspace/android/UpaxDemo/app/src/main/res/layout/fragment_movies.xml" value="0.4" />
         <entry key="..\:/Users/JUAREZ/Documents/myworkspace/android/UpaxDemo/app/src/main/res/layout/fragment_photo.xml" value="0.25416666666666665" />
-        <entry key="..\:/Users/JUAREZ/Documents/myworkspace/android/UpaxDemo/app/src/main/res/layout/item_movie.xml" value="0.264" />
+        <entry key="..\:/Users/JUAREZ/Documents/myworkspace/android/UpaxDemo/app/src/main/res/layout/item_movie.xml" value="0.4" />
+        <entry key="..\:/Users/JUAREZ/Documents/myworkspace/android/UpaxDemo/app/src/main/res/menu/bottom_nav_menu.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/JUAREZ/Documents/myworkspace/android/UpaxDemo/app/src/main/res/menu/bottom_nav_view_menu.xml" value="0.25416666666666665" />
       </map>
     </option>
