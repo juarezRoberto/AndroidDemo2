@@ -1,7 +1,7 @@
 package com.juarez.upaxdemo.data.models
 
-data class CustomResponse<T>(
+data class Response<out T>(
     val isSuccess: Boolean = false,
     val data: T? = null,
-    val message: String? = ""
+    val message: String = "",
 )

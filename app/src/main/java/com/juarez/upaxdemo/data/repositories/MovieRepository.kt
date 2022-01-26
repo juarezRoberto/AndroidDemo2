@@ -2,45 +2,55 @@ package com.juarez.upaxdemo.data.repositories
 
 import com.juarez.upaxdemo.data.datasource.MovieLocalDataSource
 import com.juarez.upaxdemo.data.datasource.MovieRemoteDataSource
-import com.juarez.upaxdemo.data.models.CustomResponse
 import com.juarez.upaxdemo.data.models.Movie
 import com.juarez.upaxdemo.data.models.toEntity
 import com.juarez.upaxdemo.data.models.toModel
+import com.juarez.upaxdemo.utils.Resource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class MovieRepository @Inject constructor(
     private val remoteDataSource: MovieRemoteDataSource,
-    private val localDataSource: MovieLocalDataSource
+    private val localDataSource: MovieLocalDataSource,
 ) {
 
-    suspend fun getPopularMovies(): CustomResponse<List<Movie>> {
+    fun getAllPopularMovies(): Flow<Resource<List<Movie>>> = flow {
+        emit(Resource.Loading(true))
         val total = localDataSource.getTotalPopularMovies()
-        if (total > 0) return CustomResponse(isSuccess = true)
-        val response = remoteDataSource.getPopularMovies()
-        response.data?.let { movies ->
-            localDataSource.saveMovies(movies.map { it.toEntity("popular") })
+        if (total < 1) {
+            val response = remoteDataSource.getPopularMoviesAPI()
+            if (response.isSuccess) {
+                localDataSource.saveMovies(response.data!!.map { it.toEntity("popular") })
+            } else emit(Resource.Error(response.message))
         }
-        return response
+        emit(Resource.Loading(false))
     }
 
-    suspend fun getTopRatedMovies(): CustomResponse<List<Movie>> {
+    fun getAllTopRatedMovies(): Flow<Resource<List<Movie>>> = flow {
+        emit(Resource.Loading(true))
         val total = localDataSource.getTotalTopRatedMovies()
-        if (total > 0) return CustomResponse(isSuccess = true)
-        val response = remoteDataSource.getTopRatedMovies()
-        response.data?.let { movies ->
-            localDataSource.saveMovies(movies.map { it.toEntity("top") })
+        if (total < 1) {
+            val response = remoteDataSource.getTopRatedMovies()
+            if (response.isSuccess) {
+                localDataSource.saveMovies(response.data!!.map { it.toEntity("top") })
+            } else emit(Resource.Error(response.message))
         }
-        return response
+        emit(Resource.Loading(false))
     }
 
-    suspend fun getMovieDetail(movieId: Int): CustomResponse<Movie> {
+    fun getMovieDetail(movieId: Int): Flow<Resource<Movie>> = flow {
+        emit(Resource.Loading(true))
         val movie = localDataSource.getMovieById(movieId)
-        movie?.let {
-            return CustomResponse(isSuccess = true, data = it.toModel())
+        if (movie != null) {
+            emit(Resource.Success(movie.toModel()))
+        } else {
+            val response = remoteDataSource.getMovieDetail(movieId)
+            if (response.isSuccess) emit(Resource.Success(response.data!!))
+            else emit(Resource.Error(response.message))
         }
-        return remoteDataSource.getMovieDetail(movieId)
+        emit(Resource.Loading(false))
     }
 
     val popularMovies: Flow<List<Movie>> = localDataSource.popularMovies.map { movieEntities ->

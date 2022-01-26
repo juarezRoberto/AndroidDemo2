@@ -21,7 +21,7 @@ class MovieDetailFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentMovieDetailBinding.inflate(inflater, container, false)
 
@@ -43,7 +43,10 @@ class MovieDetailFragment : Fragment() {
             binding.progressMovieDetail.isVisible = it
         })
         viewModel.error.observe(viewLifecycleOwner, {
-            shouldShowErrorOptions(true)
+            if (!it.isNullOrEmpty()) {
+                shouldShowErrorOptions(true)
+                binding.txtDetailError.text = it
+            }
         })
         return binding.root
     }

@@ -1,60 +1,78 @@
 package com.juarez.upaxdemo.ui.map
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.juarez.upaxdemo.R
+import com.juarez.upaxdemo.databinding.FragmentMapBinding
+import dagger.hilt.android.AndroidEntryPoint
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [MapFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class MapFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+@AndroidEntryPoint
+class MapFragment : Fragment(), OnMapReadyCallback {
+    private val viewModel: LocationsViewModel by activityViewModels()
+    private var _binding: FragmentMapBinding? = null
+    private val binding get() = _binding!!
+    private var map: GoogleMap? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_map, container, false)
+        savedInstanceState: Bundle?,
+    ): View {
+        _binding = FragmentMapBinding.inflate(inflater, container, false)
+        createMapFragment()
+        shouldShowErrorOptions()
+        viewModel.locations.observe(viewLifecycleOwner, {
+            it.forEach { location ->
+                map?.addMarker(MarkerOptions()
+                    .position(LatLng(location.latitude.toDouble(), location.longitude.toDouble()))
+                )
+            }
+        })
+
+        viewModel.loading.observe(viewLifecycleOwner, {
+            binding.progressBarMap.isVisible = it
+        })
+        viewModel.error.observe(viewLifecycleOwner, {
+            if (!it.isNullOrEmpty()) {
+                shouldShowErrorOptions(true)
+                binding.txtError.text = it
+            }
+        })
+
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MapFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MapFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    private fun shouldShowErrorOptions(visible: Boolean = false) {
+        binding.txtError.isVisible = visible
+    }
+
+    private fun createMapFragment() {
+        val mapFragment =
+            childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        map = googleMap
+        viewModel.getLocations()
+        val orizaba = LatLng(18.848090149308483, -97.09952330501545)
+        map?.animateCamera(
+            CameraUpdateFactory.newLatLngZoom(orizaba, 13f), 2000, null
+        )
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }

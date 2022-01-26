@@ -3,13 +3,15 @@ package com.juarez.upaxdemo.ui.movies
 import androidx.lifecycle.*
 import com.juarez.upaxdemo.data.models.Movie
 import com.juarez.upaxdemo.data.repositories.MovieRepository
+import com.juarez.upaxdemo.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
 @HiltViewModel
 class MoviesViewModel @Inject constructor(
-    private val repository: MovieRepository
+    private val repository: MovieRepository,
 ) : ViewModel() {
     private var _movie = MutableLiveData<Movie>()
     val movie: LiveData<Movie> get() = _movie
@@ -27,28 +29,36 @@ class MoviesViewModel @Inject constructor(
 
     val topMovies: LiveData<List<Movie>> = repository.topRatedMovies.asLiveData()
 
-    fun getPopularMovies() = viewModelScope.launch {
+    fun getPopularMovies() {
         _error.value = ""
-        _loading.value = true
-        val response = repository.getPopularMovies()
-        if (!response.isSuccess) _error.value = response.message!!
-        _loading.value = false
+        repository.getAllPopularMovies().onEach { result ->
+            when (result) {
+                is Resource.Loading -> _loading.value = result.isLoading
+                is Resource.Success -> Unit
+                is Resource.Error -> _error.value = result.message
+            }
+        }.launchIn(viewModelScope)
     }
 
-    fun getTopMovies() = viewModelScope.launch {
+    fun getTopMovies() {
         _error.value = ""
-        _loading.value = true
-        val response = repository.getTopRatedMovies()
-        if (!response.isSuccess) _error.value = response.message!!
-        _loading.value = false
+        repository.getAllTopRatedMovies().onEach { result ->
+            when (result) {
+                is Resource.Loading -> _loading.value = result.isLoading
+                is Resource.Success -> Unit
+                is Resource.Error -> _error.value = result.message
+            }
+        }.launchIn(viewModelScope)
     }
 
-    fun getMovieDetail(movieId: Int) = viewModelScope.launch {
+    fun getMovieDetail(movieId: Int) {
         _error.value = ""
-        _loading.value = true
-        val response = repository.getMovieDetail(movieId)
-        if (response.isSuccess) _movie.value = response.data!!
-        else _error.value = response.message!!
-        _loading.value = false
+        repository.getMovieDetail(movieId).onEach { result ->
+            when (result) {
+                is Resource.Loading -> _loading.value = result.isLoading
+                is Resource.Success -> result.data.also { _movie.value = it }
+                is Resource.Error -> _error.value = result.message
+            }
+        }.launchIn(viewModelScope)
     }
 }
