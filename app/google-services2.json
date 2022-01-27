@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "1048554554430",
-    "project_id": "storageexample-3dd2d",
-    "storage_bucket": "storageexample-3dd2d.appspot.com"
+    "project_number": "978039982152",
+    "project_id": "androidupaxdemo",
+    "storage_bucket": "androidupaxdemo.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1048554554430:android:1282deda5689cb57ec7d6f",
+        "mobilesdk_app_id": "1:978039982152:android:9e49bfcb665c042142707d",
         "android_client_info": {
           "package_name": "com.juarez.upaxdemo"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1048554554430-dqsbnt0146rgm81hbkgqfiotjljjnd0u.apps.googleusercontent.com",
+          "client_id": "978039982152-dnvdft3bqdmpsuc9mj5uo81h9q7o82l3.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA13lZ3z_fXf1AV-LaDNh6_KGbBReEZRzQ"
+          "current_key": "AIzaSyBLNVeh6XyddMNsap5eUeA-t1uuR-XZb40"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1048554554430-dqsbnt0146rgm81hbkgqfiotjljjnd0u.apps.googleusercontent.com",
+              "client_id": "978039982152-dnvdft3bqdmpsuc9mj5uo81h9q7o82l3.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

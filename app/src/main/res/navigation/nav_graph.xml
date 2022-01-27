@@ -26,7 +26,7 @@
     <fragment
         android:id="@+id/photoFragment"
         android:name="com.juarez.upaxdemo.ui.photo.PhotoFragment"
-        android:label="photo"
+        android:label="upload "
         tools:layout="@layout/fragment_photo" />
     <fragment
         android:id="@+id/movieDetailFragment"

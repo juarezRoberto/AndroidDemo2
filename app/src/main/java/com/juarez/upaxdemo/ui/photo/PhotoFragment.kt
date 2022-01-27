@@ -1,60 +1,124 @@
 package com.juarez.upaxdemo.ui.photo
 
+import android.Manifest
+import android.app.AlertDialog
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.MimeTypeMap
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.juarez.upaxdemo.R
+import com.juarez.upaxdemo.databinding.FragmentPhotoBinding
+import com.juarez.upaxdemo.utils.Constants
+import com.juarez.upaxdemo.utils.hideKeyboard
+import com.juarez.upaxdemo.utils.toast
+import dagger.hilt.android.AndroidEntryPoint
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [PhotoFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+@AndroidEntryPoint
 class PhotoFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private val viewModel: PhotoViewModel by viewModels()
+    private var _binding: FragmentPhotoBinding? = null
+    private val binding get() = _binding!!
+    private var imageUri: Uri? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_photo, container, false)
+        savedInstanceState: Bundle?,
+    ): View {
+        _binding = FragmentPhotoBinding.inflate(inflater, container, false)
+        val placeholderImgUri = Uri.parse(Constants.LOCAL_RESOURCE_URI + R.drawable.img_placeholder)
+        binding.imgFirebase.setImageURI(placeholderImgUri)
+        showUploadButton()
+        binding.fabAddPhoto.setOnClickListener {
+            requestPermission()
+            showUploadButton()
+        }
+        binding.btnUploadImage.setOnClickListener {
+            showUploadButton()
+            hideKeyboard()
+            val filename = binding.outlinedFilename.editText?.text.toString()
+            imageUri?.let { uri ->
+                viewModel.savePhoto(filename, uri, getFileExtension(uri))
+            }
+            binding.outlinedFilename.editText?.setText("")
+        }
+        viewModel.isSuccess.observe(viewLifecycleOwner, {
+            binding.imgFirebase.setImageURI(placeholderImgUri)
+            showUploadButton()
+            toast(Constants.FIREBASE_STORAGE_UPLOAD_SUCCESS)
+        })
+        viewModel.loading.observe(viewLifecycleOwner, {
+            binding.progressUploadingImg.isVisible = it
+        })
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment PhotoFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            PhotoFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            if (it) requestGallery.launch("image/*")
+            else toast(Constants.STORAGE_PERMISSION_DENIED)
+        }
+
+    private fun requestPermission() {
+        when {
+            ContextCompat.checkSelfPermission(requireContext(),
+                Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
+                requestGallery.launch("image/*")
             }
+            shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE) -> {
+                showRequestPermissionRationaleAlert()
+            }
+            else -> {
+                requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+        }
     }
+
+    private fun showRequestPermissionRationaleAlert() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle(Constants.ALERT_TITLE)
+        builder.setMessage(Constants.STORAGE_PERMISSION_REQUIRED)
+        builder.setPositiveButton(Constants.ALERT_OK) { dialog, _ ->
+            dialog.dismiss()
+            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+        builder.setNegativeButton(Constants.ALERT_CANCEL) { dialog, _ ->
+            dialog.dismiss()
+        }
+        builder.show()
+    }
+
+    private val requestGallery =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            imageUri = uri
+            imageUri?.let {
+                showUploadButton(true)
+                binding.imgFirebase.setImageURI(it)
+            }
+        }
+
+    private fun showUploadButton(show: Boolean = false) {
+        binding.uploadContainer.isVisible = show
+    }
+
+    private fun getFileExtension(imageUri: Uri): String? {
+        val resolver = requireContext().contentResolver
+        val mime = MimeTypeMap.getSingleton()
+        return mime.getExtensionFromMimeType(resolver.getType(imageUri))
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
+
 }
