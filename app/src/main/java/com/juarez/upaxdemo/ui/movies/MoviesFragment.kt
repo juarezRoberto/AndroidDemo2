@@ -19,12 +19,12 @@ class MoviesFragment : Fragment() {
     private var _binding: FragmentMoviesBinding? = null
     private val binding get() = _binding!!
     private val viewModel: MoviesViewModel by activityViewModels()
-    private val popularMoviesAdapter = MoviesAdapter(arrayListOf()) { onItemClicked(it) }
-    private val topMoviesAdapter = MoviesAdapter(arrayListOf()) { onItemClicked(it) }
+    private val popularMoviesAdapter = MoviesAdapter() { onItemClicked(it) }
+    private val topMoviesAdapter = MoviesAdapter() { onItemClicked(it) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentMoviesBinding.inflate(inflater, container, false)
 
@@ -47,10 +47,10 @@ class MoviesFragment : Fragment() {
         }
         // observers
         viewModel.popularMovies.observe(viewLifecycleOwner, {
-            popularMoviesAdapter.updateData(it)
+            popularMoviesAdapter.submitList(it)
         })
         viewModel.topMovies.observe(viewLifecycleOwner, {
-            topMoviesAdapter.updateData(it)
+            topMoviesAdapter.submitList(it)
         })
         viewModel.loading.observe(viewLifecycleOwner, {
             binding.progressBarMovies.isVisible = it

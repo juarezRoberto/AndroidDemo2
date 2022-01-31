@@ -10,8 +10,12 @@ object Constants {
     const val ALERT_CANCEL = "CANCEL"
     const val ALERT_TITLE = "Warning"
     const val STORAGE_PERMISSION_REQUIRED = "Storage permission is required to continue"
+    const val LOCATION_PERMISSION_REQUIRED = "Location permission is required to continue"
+    const val GPS_REQUIRED = "You need enabled your GPS to get your localization"
     const val STORAGE_PERMISSION_DENIED =
         "You need to enable storage permission manually to continue"
+    const val LOCATION_PERMISSION_DENIED =
+        "You need to enable location permission manually"
     const val FIREBASE_STORAGE_UPLOAD_SUCCESS = "image uploaded successfully"
     const val LOCAL_RESOURCE_URI = "android.resource://com.juarez.upaxdemo/"
 }

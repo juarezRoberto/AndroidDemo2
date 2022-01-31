@@ -5,6 +5,7 @@ import com.juarez.upaxdemo.data.datasource.MovieRemoteDataSource
 import com.juarez.upaxdemo.data.models.Movie
 import com.juarez.upaxdemo.data.models.toEntity
 import com.juarez.upaxdemo.data.models.toModel
+import com.juarez.upaxdemo.utils.NetworkResponse
 import com.juarez.upaxdemo.utils.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -21,9 +22,9 @@ class MovieRepository @Inject constructor(
         val total = localDataSource.getTotalPopularMovies()
         if (total < 1) {
             val response = remoteDataSource.getPopularMoviesAPI()
-            if (response.isSuccess) {
+            if (response is NetworkResponse.Success) {
                 localDataSource.saveMovies(response.data!!.map { it.toEntity("popular") })
-            } else emit(Resource.Error(response.message))
+            } else emit(Resource.Error(response.message!!))
         }
         emit(Resource.Loading(false))
     }
@@ -33,9 +34,9 @@ class MovieRepository @Inject constructor(
         val total = localDataSource.getTotalTopRatedMovies()
         if (total < 1) {
             val response = remoteDataSource.getTopRatedMovies()
-            if (response.isSuccess) {
+            if (response is NetworkResponse.Success) {
                 localDataSource.saveMovies(response.data!!.map { it.toEntity("top") })
-            } else emit(Resource.Error(response.message))
+            } else emit(Resource.Error(response.message!!))
         }
         emit(Resource.Loading(false))
     }
@@ -47,8 +48,8 @@ class MovieRepository @Inject constructor(
             emit(Resource.Success(movie.toModel()))
         } else {
             val response = remoteDataSource.getMovieDetail(movieId)
-            if (response.isSuccess) emit(Resource.Success(response.data!!))
-            else emit(Resource.Error(response.message))
+            if (response is NetworkResponse.Success) emit(Resource.Success(response.data!!))
+            else emit(Resource.Error(response.message!!))
         }
         emit(Resource.Loading(false))
     }

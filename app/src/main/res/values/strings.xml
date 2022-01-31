@@ -2,4 +2,20 @@
     <string name="app_name">UpaxDemo</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="placeholder_map_error_message">error message</string>
+    <string name="movie_movie_poster_desc">movie_poster</string>
+    <string name="placeholder_movie_error_message">error message</string>
+    <string name="placeholder_retry">Reintentar</string>
+    <string name="placeholder_movie_name">name</string>
+    <string name="placeholder_movie_overview">overview:</string>
+    <string name="placeholder_movie_overview_value">overview</string>
+    <string name="title_home_popular_movies">Popular movies</string>
+    <string name="homer_error_message">error message</string>
+    <string name="home_title_top_movies">Top movies</string>
+    <string name="placeholder_image_desc">placeholder_image</string>
+    <string name="placeholder_input_filename">filename</string>
+    <string name="btn_text_upload_image">UPLOAD IMAGE</string>
+    <string name="fab_show_gallery_desc">fab show gallery</string>
+    <string name="item_image_desc">item image</string>
+    <string name="placeholder_item_title">title</string>
 </resources>

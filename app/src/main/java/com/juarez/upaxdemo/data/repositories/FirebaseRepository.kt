@@ -1,8 +1,6 @@
 package com.juarez.upaxdemo.data.repositories
 
 import android.net.Uri
-import android.util.Log
-import com.google.firebase.FirebaseException
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObjects
 import com.google.firebase.storage.FirebaseStorage
@@ -20,12 +18,7 @@ class FirebaseRepository @Inject constructor(
     private val locationsCollectionRef = firestore.collection("locations")
 
     suspend fun saveLocation(location: Location) {
-        try {
-            locationsCollectionRef.add(location).await()
-            Log.d("LocationsViewModel", "success")
-        } catch (e: FirebaseException) {
-            Log.d("LocationsViewModel", "error" + e.localizedMessage)
-        }
+        locationsCollectionRef.add(location).await()
     }
 
     fun getLocations(): Flow<Resource<List<Location>>> = flow {

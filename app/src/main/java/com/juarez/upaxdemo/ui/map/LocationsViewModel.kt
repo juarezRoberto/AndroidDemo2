@@ -1,6 +1,5 @@
 package com.juarez.upaxdemo.ui.map
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -27,7 +26,10 @@ class LocationsViewModel @Inject constructor(
     val error: LiveData<String> get() = _error
 
     fun saveLocation(location: Location) = viewModelScope.launch {
+        _loading.value = true
         repository.saveLocation(location)
+        _loading.value = false
+        getLocations()
     }
 
     fun getLocations() {
@@ -35,13 +37,8 @@ class LocationsViewModel @Inject constructor(
             when (resource) {
                 is Resource.Loading -> _loading.value = resource.isLoading
                 is Resource.Success -> resource.data.also { _locations.value = it }
-                is Resource.Error -> {
-                    Log.d("LocationsViewModel", resource.message)
-                    _error.value = resource.message
-                }
-
+                is Resource.Error -> _error.value = resource.message
             }
         }.launchIn(viewModelScope)
     }
-
 }

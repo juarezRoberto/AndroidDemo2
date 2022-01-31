@@ -2,7 +2,6 @@ package com.juarez.upaxdemo.ui.photo
 
 import android.Manifest
 import android.app.AlertDialog
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,15 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.juarez.upaxdemo.R
 import com.juarez.upaxdemo.databinding.FragmentPhotoBinding
-import com.juarez.upaxdemo.utils.Constants
-import com.juarez.upaxdemo.utils.hideKeyboard
-import com.juarez.upaxdemo.utils.toast
+import com.juarez.upaxdemo.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -39,7 +35,7 @@ class PhotoFragment : Fragment() {
         binding.imgFirebase.setImageURI(placeholderImgUri)
         showUploadButton()
         binding.fabAddPhoto.setOnClickListener {
-            requestPermission()
+            requestPermissions()
             showUploadButton()
         }
         binding.btnUploadImage.setOnClickListener {
@@ -68,17 +64,14 @@ class PhotoFragment : Fragment() {
             else toast(Constants.STORAGE_PERMISSION_DENIED)
         }
 
-    private fun requestPermission() {
-        when {
-            ContextCompat.checkSelfPermission(requireContext(),
-                Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED -> {
-                requestGallery.launch("image/*")
-            }
-            shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE) -> {
-                showRequestPermissionRationaleAlert()
-            }
-            else -> {
-                requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+    private fun requestPermissions() {
+        requestPermission(Manifest.permission.READ_EXTERNAL_STORAGE) {
+            when (it) {
+                PermissionResult.GRANTED -> requestGallery.launch("image/*")
+                PermissionResult.DENIED -> {
+                    requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                }
+                PermissionResult.RATIONALE -> showRequestPermissionRationaleAlert()
             }
         }
     }
