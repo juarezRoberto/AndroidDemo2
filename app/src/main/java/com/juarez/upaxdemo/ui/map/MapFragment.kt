@@ -139,6 +139,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (!isLocationEnabled()) binding.btnSaveLocation.isVisible = false
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
