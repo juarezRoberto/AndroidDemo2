@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -25,6 +26,7 @@ import com.juarez.upaxdemo.data.models.Location
 import com.juarez.upaxdemo.databinding.FragmentMapBinding
 import com.juarez.upaxdemo.utils.*
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 
 
 @AndroidEntryPoint
@@ -57,24 +59,30 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 }
             }
         }
-        viewModel.locations.observe(viewLifecycleOwner, {
-            it.forEach { location ->
-                map?.addMarker(MarkerOptions()
-                    .position(LatLng(location.latitude.toDouble(), location.longitude.toDouble()))
-                )
+        lifecycleScope.launchWhenStarted {
+            viewModel.locationState.collectLatest {
+                when(it) {
+                    is LocationsState.Error -> {
+                        if (it.message.isNotEmpty()) {
+                            shouldShowErrorOptions(true)
+                            binding.txtError.text = it.message
+                        }
+                    }
+                    is LocationsState.Loading -> {
+                        binding.progressBarMap.isVisible = it.isLoading
+                        binding.btnSaveLocation.isVisible = !it.isLoading
+                    }
+                    is LocationsState.Success -> {
+                        it.data.forEach { location ->
+                            map?.addMarker(MarkerOptions()
+                                .position(LatLng(location.latitude.toDouble(), location.longitude.toDouble()))
+                            )
+                        }
+                    }
+                    else -> Unit
+                }
             }
-        })
-        viewModel.loading.observe(viewLifecycleOwner, {
-            binding.progressBarMap.isVisible = it
-            binding.btnSaveLocation.isVisible = !it
-        })
-        viewModel.error.observe(viewLifecycleOwner, {
-            if (!it.isNullOrEmpty()) {
-                shouldShowErrorOptions(true)
-                binding.txtError.text = it
-            }
-        })
-
+        }
         return binding.root
     }
 

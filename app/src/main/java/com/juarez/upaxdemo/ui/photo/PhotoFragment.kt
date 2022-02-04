@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.juarez.upaxdemo.R
 import com.juarez.upaxdemo.databinding.FragmentPhotoBinding
 import com.juarez.upaxdemo.utils.*
@@ -47,14 +48,20 @@ class PhotoFragment : Fragment() {
             }
             binding.outlinedFilename.editText?.setText("")
         }
-        viewModel.isSuccess.observe(viewLifecycleOwner, {
-            binding.imgFirebase.setImageURI(placeholderImgUri)
-            showUploadButton()
-            toast(Constants.FIREBASE_STORAGE_UPLOAD_SUCCESS)
-        })
-        viewModel.loading.observe(viewLifecycleOwner, {
-            binding.progressUploadingImg.isVisible = it
-        })
+        lifecycleScope.launchWhenStarted {
+            viewModel.savePhotoState.collect {
+                when (it) {
+                    is SavePhotoState.Loading -> {
+                        binding.progressUploadingImg.isVisible = it.isLoading
+                    }
+                    is SavePhotoState.Success -> {
+                        binding.imgFirebase.setImageURI(placeholderImgUri)
+                        showUploadButton()
+                        toast(Constants.FIREBASE_STORAGE_UPLOAD_SUCCESS)
+                    }
+                }
+            }
+        }
         return binding.root
     }
 

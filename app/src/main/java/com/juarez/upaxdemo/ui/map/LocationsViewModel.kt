@@ -1,13 +1,13 @@
 package com.juarez.upaxdemo.ui.map
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juarez.upaxdemo.data.models.Location
 import com.juarez.upaxdemo.data.repositories.FirebaseRepository
 import com.juarez.upaxdemo.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -18,26 +18,23 @@ class LocationsViewModel @Inject constructor(
     private val repository: FirebaseRepository,
 ) : ViewModel() {
 
-    private var _locations = MutableLiveData<List<Location>>()
-    val locations: LiveData<List<Location>> get() = _locations
-    private var _loading = MutableLiveData<Boolean>()
-    val loading: LiveData<Boolean> get() = _loading
-    private val _error = MutableLiveData<String>()
-    val error: LiveData<String> get() = _error
+    private val _locationsState = MutableStateFlow<LocationsState>(LocationsState.Empty)
+    val locationState: StateFlow<LocationsState> = _locationsState
 
     fun saveLocation(location: Location) = viewModelScope.launch {
-        _loading.value = true
+        _locationsState.value = LocationsState.Loading(true)
         repository.saveLocation(location)
-        _loading.value = false
+        _locationsState.value = LocationsState.Loading(false)
         getLocations()
     }
 
     fun getLocations() {
         repository.getLocations().onEach { resource ->
             when (resource) {
-                is Resource.Loading -> _loading.value = resource.isLoading
-                is Resource.Success -> resource.data.also { _locations.value = it }
-                is Resource.Error -> _error.value = resource.message
+                is Resource.Loading -> _locationsState.value =
+                    LocationsState.Loading(resource.isLoading)
+                is Resource.Success -> _locationsState.value = LocationsState.Success(resource.data)
+                is Resource.Error -> _locationsState.value = LocationsState.Error(resource.message)
             }
         }.launchIn(viewModelScope)
     }
