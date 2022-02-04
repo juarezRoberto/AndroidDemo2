@@ -66,7 +66,6 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddPhoto"
         android:layout_width="wrap_content"
@@ -80,6 +79,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:tint="@color/white"
         android:contentDescription="@string/fab_show_gallery_desc" />
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabShowPhotosLibrary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:contentDescription="@string/fab_show_gallery_desc"
+        android:focusable="true"
+        android:src="@drawable/ic_photo_library"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="@color/white" />
 
     <ProgressBar
         android:id="@+id/progressUploadingImg"

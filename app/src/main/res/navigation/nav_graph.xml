@@ -27,7 +27,15 @@
         android:id="@+id/photoFragment"
         android:name="com.juarez.upaxdemo.ui.photo.PhotoFragment"
         android:label="upload "
-        tools:layout="@layout/fragment_photo" />
+        tools:layout="@layout/fragment_photo">
+        <action
+            android:id="@+id/action_photoFragment_to_photosFragment"
+            app:destination="@id/photosFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out" />
+    </fragment>
     <fragment
         android:id="@+id/movieDetailFragment"
         android:name="com.juarez.upaxdemo.ui.movies.MovieDetailFragment"
@@ -37,4 +45,9 @@
             android:name="movie_id"
             app:argType="integer" />
     </fragment>
+    <fragment
+        android:id="@+id/photosFragment"
+        android:name="com.juarez.upaxdemo.ui.photo.PhotosFragment"
+        android:label="photos"
+        tools:layout="@layout/fragment_photos" />
 </navigation>

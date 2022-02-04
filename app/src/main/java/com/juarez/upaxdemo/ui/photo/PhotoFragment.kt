@@ -13,6 +13,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
 import com.juarez.upaxdemo.R
 import com.juarez.upaxdemo.databinding.FragmentPhotoBinding
 import com.juarez.upaxdemo.utils.*
@@ -38,6 +39,10 @@ class PhotoFragment : Fragment() {
         binding.fabAddPhoto.setOnClickListener {
             requestPermissions()
             showUploadButton()
+        }
+        binding.fabShowPhotosLibrary.setOnClickListener {
+            val action = PhotoFragmentDirections.actionPhotoFragmentToPhotosFragment()
+            it.findNavController().navigate(action)
         }
         binding.btnUploadImage.setOnClickListener {
             showUploadButton()

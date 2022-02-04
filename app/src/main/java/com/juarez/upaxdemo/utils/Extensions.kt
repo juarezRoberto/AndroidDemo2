@@ -21,6 +21,13 @@ fun ImageView.loadPosterImage(posterPath: String) {
         .into(this)
 }
 
+fun ImageView.loadFirebaseImage(url: String) {
+    Glide
+        .with(this.context)
+        .load(url)
+        .into(this)
+}
+
 fun Fragment.toast(text: String, length: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(requireContext(), text, length).show()
 }
