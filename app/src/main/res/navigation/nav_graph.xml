@@ -47,7 +47,7 @@
     </fragment>
     <fragment
         android:id="@+id/photosFragment"
-        android:name="com.juarez.upaxdemo.ui.photo.PhotosFragment"
+        android:name="com.juarez.upaxdemo.ui.photo.photos.PhotosFragment"
         android:label="photos"
         tools:layout="@layout/fragment_photos" />
 </navigation>

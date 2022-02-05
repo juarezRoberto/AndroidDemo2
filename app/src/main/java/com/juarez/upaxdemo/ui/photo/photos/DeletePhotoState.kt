@@ -1,4 +1,4 @@
-package com.juarez.upaxdemo.ui.photo
+package com.juarez.upaxdemo.ui.photo.photos
 
 sealed class DeletePhotoState {
     data class Loading(val isLoading: Boolean) : DeletePhotoState()

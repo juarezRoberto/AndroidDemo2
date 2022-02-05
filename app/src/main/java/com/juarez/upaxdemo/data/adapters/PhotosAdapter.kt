@@ -9,11 +9,10 @@ import com.juarez.upaxdemo.data.models.Photo
 import com.juarez.upaxdemo.databinding.ItemPhotoBinding
 import com.juarez.upaxdemo.utils.loadFirebaseImage
 
-class PhotosAdapter(private val onDeleteItem: (filename: String) -> Unit) :
+class PhotosAdapter(private val onDeleteItem: (position: Int) -> Unit) :
     ListAdapter<Photo, PhotosAdapter.ViewHolder>(DiffCallback()) {
 
     class ViewHolder(val binding: ItemPhotoBinding) : RecyclerView.ViewHolder(binding.root)
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemPhotoBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -26,8 +25,8 @@ class PhotosAdapter(private val onDeleteItem: (filename: String) -> Unit) :
             binding.apply {
                 imgFirePhoto.loadFirebaseImage(photo.url)
                 txtFireName.text = photo.filename
-                txtFireSize.text = "${photo.size} bytes"
-                btnDeletePhoto.setOnClickListener { onDeleteItem(photo.filename) }
+                txtFireSize.text = "${photo.size} bytes."
+                btnDeletePhoto.setOnClickListener { onDeleteItem(position) }
             }
         }
     }

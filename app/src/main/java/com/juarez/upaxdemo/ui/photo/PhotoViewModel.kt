@@ -1,11 +1,14 @@
 package com.juarez.upaxdemo.ui.photo
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juarez.upaxdemo.data.models.Photo
 import com.juarez.upaxdemo.data.repositories.FirebaseRepository
 import com.juarez.upaxdemo.data.repositories.FirebaseResult
+import com.juarez.upaxdemo.ui.photo.photos.DeletePhotoState
+import com.juarez.upaxdemo.ui.photo.photos.GetPhotosState
 import com.juarez.upaxdemo.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -58,14 +61,16 @@ class PhotoViewModel @Inject constructor(private val repository: FirebaseReposit
         }.launchIn(viewModelScope)
     }
 
-    fun deletePhoto(filename: String, oldList: List<Photo>) {
-        repository.deletePhoto(filename).onEach {
+    fun deletePhoto(pos: Int, oldList: List<Photo>) {
+        val photo = oldList[pos]
+        Log.d("photo", photo.toString())
+        repository.deletePhoto(photo.filename).onEach {
             when (it) {
                 is FirebaseResult.Loading -> {
                     _deletePhotoState.value = DeletePhotoState.Loading(it.isLoading)
                 }
                 is FirebaseResult.Success -> {
-                    val newList = oldList.filter { photo -> photo.filename != filename }
+                    val newList = oldList.filterIndexed { i, _ -> i != pos }
                     _photosState.value = GetPhotosState.Success(newList)
                     _deletePhotoState.value = DeletePhotoState.Success
                 }

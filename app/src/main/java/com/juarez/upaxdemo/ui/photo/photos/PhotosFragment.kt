@@ -1,4 +1,4 @@
-package com.juarez.upaxdemo.ui.photo
+package com.juarez.upaxdemo.ui.photo.photos
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,10 +8,13 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.juarez.upaxdemo.data.adapters.PhotosAdapter
 import com.juarez.upaxdemo.databinding.FragmentPhotosBinding
+import com.juarez.upaxdemo.ui.photo.PhotoViewModel
 import com.juarez.upaxdemo.utils.toast
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -33,6 +36,9 @@ class PhotosFragment : Fragment() {
             adapter = photosAdapter
             setHasFixedSize(true)
         }
+
+        ItemTouchHelper(itemSwipe).also { it.attachToRecyclerView(binding.recyclerFirebasePhotos) }
+
         viewModel.getImages()
         lifecycleScope.launchWhenStarted {
             viewModel.photosState.collect {
@@ -62,8 +68,24 @@ class PhotosFragment : Fragment() {
         return binding.root
     }
 
-    private fun deletePhoto(filename: String) {
-        viewModel.deletePhoto(filename, photosAdapter.currentList)
+    private val itemSwipe = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+        override fun onMove(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder,
+        ): Boolean {
+            return false
+        }
+
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            val position = viewHolder.adapterPosition
+            viewModel.deletePhoto(position, photosAdapter.currentList)
+        }
+
+    }
+
+    private fun deletePhoto(position: Int) {
+        viewModel.deletePhoto(position, photosAdapter.currentList)
     }
 
     override fun onDestroy() {

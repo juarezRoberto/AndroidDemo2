@@ -1,4 +1,4 @@
-package com.juarez.upaxdemo.ui.photo
+package com.juarez.upaxdemo.ui.photo.photos
 
 import com.juarez.upaxdemo.data.models.Photo
 
