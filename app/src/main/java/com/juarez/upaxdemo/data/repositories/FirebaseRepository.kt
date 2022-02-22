@@ -13,7 +13,7 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class FirebaseRepository @Inject constructor(
-    private val firestore: FirebaseFirestore,
+    firestore: FirebaseFirestore,
     private val storage: FirebaseStorage,
 ) {
     private val locationsCollectionRef = firestore.collection("locations")
@@ -55,7 +55,7 @@ class FirebaseRepository @Inject constructor(
         emit(FirebaseResult.Loading(false))
     }
 
-    fun deletePhoto(filename: String): Flow<FirebaseResult<Boolean>> = flow {
+    fun deleteImage(filename: String): Flow<FirebaseResult<Boolean>> = flow {
         emit(FirebaseResult.Loading(true))
         storage.reference.child(("images/${filename}")).delete().await()
         emit(FirebaseResult.Success(true))

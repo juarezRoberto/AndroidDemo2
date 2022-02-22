@@ -3,7 +3,8 @@ package com.juarez.upaxdemo.ui.map
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.juarez.upaxdemo.data.models.Location
-import com.juarez.upaxdemo.data.repositories.FirebaseRepository
+import com.juarez.upaxdemo.domain.GetLocationsUseCase
+import com.juarez.upaxdemo.domain.SaveLocationUseCase
 import com.juarez.upaxdemo.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LocationsViewModel @Inject constructor(
-    private val repository: FirebaseRepository,
+    private val getLocationsUseCase: GetLocationsUseCase,
+    private val saveLocationUseCase: SaveLocationUseCase,
 ) : ViewModel() {
 
     private val _locationsState = MutableStateFlow<LocationsState>(LocationsState.Empty)
@@ -23,13 +25,13 @@ class LocationsViewModel @Inject constructor(
 
     fun saveLocation(location: Location) = viewModelScope.launch {
         _locationsState.value = LocationsState.Loading(true)
-        repository.saveLocation(location)
+        saveLocationUseCase(location)
         _locationsState.value = LocationsState.Loading(false)
         getLocations()
     }
 
     fun getLocations() {
-        repository.getLocations().onEach { resource ->
+        getLocationsUseCase().onEach { resource ->
             when (resource) {
                 is Resource.Loading -> _locationsState.value =
                     LocationsState.Loading(resource.isLoading)

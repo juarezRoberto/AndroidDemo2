@@ -59,9 +59,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 }
             }
         }
+        
         lifecycleScope.launchWhenStarted {
             viewModel.locationState.collectLatest {
-                when(it) {
+                when (it) {
                     is LocationsState.Error -> {
                         if (it.message.isNotEmpty()) {
                             shouldShowErrorOptions(true)
@@ -75,7 +76,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     is LocationsState.Success -> {
                         it.data.forEach { location ->
                             map?.addMarker(MarkerOptions()
-                                .position(LatLng(location.latitude.toDouble(), location.longitude.toDouble()))
+                                .position(LatLng(location.latitude.toDouble(),
+                                    location.longitude.toDouble()))
                             )
                         }
                     }

@@ -2,7 +2,7 @@ package com.juarez.upaxdemo.ui.movies
 
 import androidx.lifecycle.*
 import com.juarez.upaxdemo.data.models.Movie
-import com.juarez.upaxdemo.data.repositories.MovieRepository
+import com.juarez.upaxdemo.domain.*
 import com.juarez.upaxdemo.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
@@ -11,7 +11,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MoviesViewModel @Inject constructor(
-    private val repository: MovieRepository,
+    popularMoviesUseCase: PopularMoviesUseCase,
+    topRatedMoviesUseCase: TopRatedMoviesUseCase,
+    private val getMovieDetailUseCase: GetMovieDetailUseCase,
+    private val getPopularMoviesUseCaseUseCase: GetPopularMoviesUseCase,
+    private val getTopRatedMoviesUseCase: GetTopRatedMoviesUseCase,
 ) : ViewModel() {
     private var _movie = MutableLiveData<Movie>()
     val movie: LiveData<Movie> get() = _movie
@@ -25,13 +29,13 @@ class MoviesViewModel @Inject constructor(
         getPopularMovies()
     }
 
-    val popularMovies: LiveData<List<Movie>> = repository.popularMovies.asLiveData()
+    val popularMovies: LiveData<List<Movie>> = popularMoviesUseCase().asLiveData()
 
-    val topMovies: LiveData<List<Movie>> = repository.topRatedMovies.asLiveData()
+    val topMovies: LiveData<List<Movie>> = topRatedMoviesUseCase().asLiveData()
 
     fun getPopularMovies() {
         _error.value = ""
-        repository.getAllPopularMovies().onEach { result ->
+        getPopularMoviesUseCaseUseCase().onEach { result ->
             when (result) {
                 is Resource.Loading -> _loading.value = result.isLoading
                 is Resource.Success -> Unit
@@ -42,7 +46,7 @@ class MoviesViewModel @Inject constructor(
 
     fun getTopMovies() {
         _error.value = ""
-        repository.getAllTopRatedMovies().onEach { result ->
+        getTopRatedMoviesUseCase().onEach { result ->
             when (result) {
                 is Resource.Loading -> _loading.value = result.isLoading
                 is Resource.Success -> Unit
@@ -53,7 +57,7 @@ class MoviesViewModel @Inject constructor(
 
     fun getMovieDetail(movieId: Int) {
         _error.value = ""
-        repository.getMovieDetail(movieId).onEach { result ->
+        getMovieDetailUseCase(movieId).onEach { result ->
             when (result) {
                 is Resource.Loading -> _loading.value = result.isLoading
                 is Resource.Success -> result.data.also { _movie.value = it }
