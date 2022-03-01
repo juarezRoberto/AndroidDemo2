@@ -1,7 +1,7 @@
 package com.juarez.upaxdemo.api
 
-import com.juarez.upaxdemo.data.models.Movie
-import com.juarez.upaxdemo.data.models.MovieResponse
+import com.juarez.upaxdemo.movies.data.Movie
+import com.juarez.upaxdemo.movies.data.MovieResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path

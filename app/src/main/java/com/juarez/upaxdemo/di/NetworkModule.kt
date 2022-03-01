@@ -48,7 +48,7 @@ object NetworkModule {
     @Provides
     fun provideHttpClient(
         httpInterceptor: Interceptor,
-        httpLoggingInterceptor: HttpLoggingInterceptor
+        httpLoggingInterceptor: HttpLoggingInterceptor,
     ): OkHttpClient =
         OkHttpClient.Builder()
             .addInterceptor(httpLoggingInterceptor)
@@ -56,6 +56,7 @@ object NetworkModule {
             .addInterceptor(httpInterceptor)
             .build()
 
+    @Singleton
     @Provides
     fun provideGson(): Gson = GsonBuilder().create()
 
@@ -67,6 +68,7 @@ object NetworkModule {
         .client(client)
         .build()
 
+    @Singleton
     @Provides
     fun provideMovieAPI(retrofit: Retrofit): MovieAPI = retrofit.create(MovieAPI::class.java)
 }
