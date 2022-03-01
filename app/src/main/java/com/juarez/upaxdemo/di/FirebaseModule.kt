@@ -1,7 +1,9 @@
 package com.juarez.upaxdemo.di
 
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,5 +24,17 @@ object FirebaseModule {
     @Provides
     fun provideFirebaseStorage(): FirebaseStorage {
         return FirebaseStorage.getInstance()
+    }
+
+    @Singleton
+    @Provides
+    fun provideLocationsCollection(firestore: FirebaseFirestore): CollectionReference {
+        return firestore.collection("locations")
+    }
+
+    @Singleton
+    @Provides
+    fun provideStorageReference(storage: FirebaseStorage): StorageReference {
+        return storage.reference
     }
 }
