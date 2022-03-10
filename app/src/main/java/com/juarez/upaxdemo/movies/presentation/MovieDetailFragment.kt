@@ -7,10 +7,13 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.juarez.upaxdemo.databinding.FragmentMovieDetailBinding
+import com.juarez.upaxdemo.movies.data.Movie
 import com.juarez.upaxdemo.utils.loadPosterImage
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MovieDetailFragment : Fragment() {
@@ -32,23 +35,32 @@ class MovieDetailFragment : Fragment() {
         }
 
         viewModel.getMovieDetail(args.movieId)
-        viewModel.movie.observe(viewLifecycleOwner) {
-            with(binding) {
-                imgPoster.loadPosterImage(it.poster_path)
-                txtName.text = it.title
-                txtOverview.text = it.overview
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            launch {
+                viewModel.movie.collect { updateUI(it) }
+            }
+            launch {
+                viewModel.loading.collect { binding.progressMovieDetail.isVisible = it }
+            }
+            launch {
+                viewModel.error.collect {
+                    if (it.isNotEmpty()) {
+                        shouldShowErrorOptions(true)
+                        binding.txtDetailError.text = it
+                    }
+                }
             }
         }
-        viewModel.loading.observe(viewLifecycleOwner) {
-            binding.progressMovieDetail.isVisible = it
-        }
-        viewModel.error.observe(viewLifecycleOwner) {
-            if (!it.isNullOrEmpty()) {
-                shouldShowErrorOptions(true)
-                binding.txtDetailError.text = it
-            }
-        }
+
         return binding.root
+    }
+
+    private fun updateUI(movie: Movie) {
+        with(binding) {
+            imgPoster.loadPosterImage(movie.poster_path)
+            txtName.text = movie.title
+            txtOverview.text = movie.overview
+        }
     }
 
     private fun shouldShowErrorOptions(visible: Boolean = false) {

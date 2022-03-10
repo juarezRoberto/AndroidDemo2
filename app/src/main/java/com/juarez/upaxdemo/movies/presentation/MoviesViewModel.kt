@@ -1,12 +1,12 @@
 package com.juarez.upaxdemo.movies.presentation
 
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.juarez.upaxdemo.movies.data.Movie
 import com.juarez.upaxdemo.movies.domain.*
 import com.juarez.upaxdemo.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,21 +17,21 @@ class MoviesViewModel @Inject constructor(
     private val getPopularMoviesUseCaseUseCase: GetPopularMoviesUseCase,
     private val getTopRatedMoviesUseCase: GetTopRatedMoviesUseCase,
 ) : ViewModel() {
-    private var _movie = MutableLiveData<Movie>()
-    val movie: LiveData<Movie> get() = _movie
-    private var _loading = MutableLiveData<Boolean>()
-    val loading: LiveData<Boolean> get() = _loading
-    private val _error = MutableLiveData<String>()
-    val error: LiveData<String> get() = _error
+    private var _movie = MutableStateFlow(Movie())
+    val movie = _movie.asStateFlow()
+    private var _loading = MutableStateFlow(false)
+    val loading = _loading.asStateFlow()
+    private val _error = MutableStateFlow("")
+    val error = _error.asStateFlow()
 
     init {
         getTopMovies()
         getPopularMovies()
     }
 
-    val popularMovies: LiveData<List<Movie>> = popularMoviesUseCase().asLiveData()
+    val popularMovies: Flow<List<Movie>> = popularMoviesUseCase()
 
-    val topMovies: LiveData<List<Movie>> = topRatedMoviesUseCase().asLiveData()
+    val topMovies: Flow<List<Movie>> = topRatedMoviesUseCase()
 
     fun getPopularMovies() {
         _error.value = ""
