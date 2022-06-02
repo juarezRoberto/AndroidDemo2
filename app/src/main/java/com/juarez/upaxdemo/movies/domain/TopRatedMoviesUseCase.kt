@@ -4,7 +4,9 @@ import com.juarez.upaxdemo.movies.data.Movie
 import com.juarez.upaxdemo.movies.data.MovieRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class TopRatedMoviesUseCase @Inject constructor(private val repository: MovieRepository) {
     operator fun invoke(): Flow<List<Movie>> = repository.topRatedMovies
 }
