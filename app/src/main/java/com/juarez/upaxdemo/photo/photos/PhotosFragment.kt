@@ -1,11 +1,8 @@
 package com.juarez.upaxdemo.photo.photos
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -14,22 +11,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.juarez.upaxdemo.databinding.FragmentPhotosBinding
 import com.juarez.upaxdemo.photo.photo.PhotoViewModel
+import com.juarez.upaxdemo.utils.BaseFragment
 import com.juarez.upaxdemo.utils.toast
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class PhotosFragment : Fragment() {
+class PhotosFragment : BaseFragment<FragmentPhotosBinding>(FragmentPhotosBinding::inflate) {
 
     private val viewModel: PhotoViewModel by activityViewModels()
-    private var _binding: FragmentPhotosBinding? = null
-    private val binding get() = _binding!!
     private val photosAdapter = PhotosAdapter { deletePhoto(it) }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        _binding = FragmentPhotosBinding.inflate(inflater, container, false)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.recyclerFirebasePhotos.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = photosAdapter
@@ -64,7 +57,6 @@ class PhotosFragment : Fragment() {
                 }
             }
         }
-        return binding.root
     }
 
     private val itemSwipe = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
@@ -85,10 +77,5 @@ class PhotosFragment : Fragment() {
 
     private fun deletePhoto(position: Int) {
         viewModel.deletePhoto(position, photosAdapter.currentList)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
     }
 }

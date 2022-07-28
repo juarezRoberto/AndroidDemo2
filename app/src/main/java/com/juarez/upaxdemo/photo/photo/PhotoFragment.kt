@@ -4,13 +4,10 @@ import android.Manifest
 import android.app.AlertDialog
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
@@ -21,18 +18,13 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class PhotoFragment : Fragment() {
+class PhotoFragment : BaseFragment<FragmentPhotoBinding>(FragmentPhotoBinding::inflate) {
 
     private val viewModel: PhotoViewModel by viewModels()
-    private var _binding: FragmentPhotoBinding? = null
-    private val binding get() = _binding!!
     private var imageUri: Uri? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        _binding = FragmentPhotoBinding.inflate(inflater, container, false)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         val placeholderImgUri = Uri.parse(Constants.LOCAL_RESOURCE_URI + R.drawable.img_placeholder)
         binding.imgFirebase.setImageURI(placeholderImgUri)
         showUploadButton()
@@ -67,7 +59,6 @@ class PhotoFragment : Fragment() {
                 }
             }
         }
-        return binding.root
     }
 
     private val requestPermissionLauncher =
@@ -120,10 +111,4 @@ class PhotoFragment : Fragment() {
         val mime = MimeTypeMap.getSingleton()
         return mime.getExtensionFromMimeType(resolver.getType(imageUri))
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
-    }
-
 }

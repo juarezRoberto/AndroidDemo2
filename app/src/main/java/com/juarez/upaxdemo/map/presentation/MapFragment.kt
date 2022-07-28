@@ -5,12 +5,9 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -30,19 +27,15 @@ import kotlinx.coroutines.flow.collectLatest
 
 
 @AndroidEntryPoint
-class MapFragment : Fragment(), OnMapReadyCallback {
+class MapFragment : BaseFragment<FragmentMapBinding>(FragmentMapBinding::inflate),
+    OnMapReadyCallback {
     private val viewModel: LocationsViewModel by activityViewModels()
-    private var _binding: FragmentMapBinding? = null
-    private val binding get() = _binding!!
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var map: GoogleMap? = null
 
     @SuppressLint("MissingPermission")
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View {
-        _binding = FragmentMapBinding.inflate(inflater, container, false)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.btnSaveLocation.isVisible = false
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
@@ -85,7 +78,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 }
             }
         }
-        return binding.root
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -152,10 +144,5 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     override fun onResume() {
         super.onResume()
         if (!isLocationEnabled()) binding.btnSaveLocation.isVisible = false
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
     }
 }
