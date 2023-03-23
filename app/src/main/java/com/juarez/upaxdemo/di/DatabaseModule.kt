@@ -2,9 +2,9 @@ package com.juarez.upaxdemo.di
 
 import android.content.Context
 import androidx.room.Room
-import com.juarez.upaxdemo.db.AppDatabase
-import com.juarez.upaxdemo.db.MovieDao
-import com.juarez.upaxdemo.utils.Constants
+import com.juarez.upaxdemo.common.Constants
+import com.juarez.upaxdemo.data.local.db.AppDatabase
+import com.juarez.upaxdemo.data.local.db.MovieDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

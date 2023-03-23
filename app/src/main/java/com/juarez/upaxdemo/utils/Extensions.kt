@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.location.LocationManagerCompat
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.juarez.upaxdemo.common.Constants
 
 fun ImageView.loadPosterImage(posterPath: String) {
     Glide
@@ -56,8 +57,10 @@ fun Fragment.requestPermission(
     onResult: (result: PermissionResult) -> Unit,
 ) {
     when {
-        ContextCompat.checkSelfPermission(requireContext(),
-            permission) == PackageManager.PERMISSION_GRANTED -> onResult(PermissionResult.GRANTED)
+        ContextCompat.checkSelfPermission(
+            requireContext(),
+            permission
+        ) == PackageManager.PERMISSION_GRANTED -> onResult(PermissionResult.GRANTED)
         shouldShowRequestPermissionRationale(permission) -> onResult(PermissionResult.RATIONALE)
         else -> onResult(PermissionResult.DENIED)
     }
