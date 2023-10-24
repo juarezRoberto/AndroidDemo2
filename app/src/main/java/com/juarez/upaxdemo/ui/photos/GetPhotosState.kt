@@ -6,5 +6,5 @@ sealed interface GetPhotosState {
     data class Loading(val isLoading: Boolean) : GetPhotosState
     data class Success(val data: List<Photo>) : GetPhotosState
     data class Error(val message: String) : GetPhotosState
-    object Empty : GetPhotosState
+    data object Empty : GetPhotosState
 }

@@ -2,5 +2,5 @@ package com.juarez.upaxdemo.ui.photo
 
 sealed interface SavePhotoState {
     data class Loading(val isLoading: Boolean) : SavePhotoState
-    object Success : SavePhotoState
+    data object Success : SavePhotoState
 }
