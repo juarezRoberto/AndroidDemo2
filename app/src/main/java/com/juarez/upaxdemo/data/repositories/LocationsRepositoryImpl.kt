@@ -1,7 +1,7 @@
 package com.juarez.upaxdemo.data.repositories
 
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.ktx.toObjects
+import com.google.firebase.firestore.toObjects
 import com.juarez.upaxdemo.domain.models.Location
 import com.juarez.upaxdemo.domain.repositories.LocationsRepository
 import com.juarez.upaxdemo.utils.Resource
