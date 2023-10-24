@@ -9,11 +9,11 @@ plugins {
 }
 
 android {
-    namespace = "com.juarez.upaxdemo"
+    namespace = "com.juarez.androiddemo"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.juarez.upaxdemo"
+        applicationId = "com.juarez.androiddemo"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

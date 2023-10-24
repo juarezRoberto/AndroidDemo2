@@ -7,12 +7,12 @@
 
     <fragment
         android:id="@+id/mapFragment"
-        android:name="com.juarez.upaxdemo.ui.map.MapFragment"
+        android:name="com.juarez.androiddemo.ui.map.MapFragment"
         android:label="map"
         tools:layout="@layout/fragment_map" />
     <fragment
         android:id="@+id/moviesFragment"
-        android:name="com.juarez.upaxdemo.ui.movie.MoviesFragment"
+        android:name="com.juarez.androiddemo.ui.movie.MoviesFragment"
         android:label="movies"
         tools:layout="@layout/fragment_movies">
         <action
@@ -25,7 +25,7 @@
     </fragment>
     <fragment
         android:id="@+id/photoFragment"
-        android:name="com.juarez.upaxdemo.ui.photo.PhotoFragment"
+        android:name="com.juarez.androiddemo.ui.photo.PhotoFragment"
         android:label="upload "
         tools:layout="@layout/fragment_photo">
         <action
@@ -38,7 +38,7 @@
     </fragment>
     <fragment
         android:id="@+id/movieDetailFragment"
-        android:name="com.juarez.upaxdemo.ui.movie.MovieDetailFragment"
+        android:name="com.juarez.androiddemo.ui.movie.MovieDetailFragment"
         android:label="detail"
         tools:layout="@layout/fragment_movie_detail">
         <argument
@@ -47,7 +47,7 @@
     </fragment>
     <fragment
         android:id="@+id/photosFragment"
-        android:name="com.juarez.upaxdemo.ui.photos.PhotosFragment"
+        android:name="com.juarez.androiddemo.ui.photos.PhotosFragment"
         android:label="photos"
         tools:layout="@layout/fragment_photos" />
 </navigation>
