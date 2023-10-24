@@ -7,4 +7,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "UpaxDemo"
-include ':app'
+include(":app")
