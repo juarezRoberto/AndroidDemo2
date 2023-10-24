@@ -9,6 +9,7 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -25,6 +26,7 @@ import com.juarez.upaxdemo.domain.models.Location
 import com.juarez.upaxdemo.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
@@ -54,35 +56,40 @@ class MapFragment : BaseFragment<FragmentMapBinding>(FragmentMapBinding::inflate
             }
         }
 
-        lifecycleScope.launchWhenStarted {
-            viewModel.locationState.collectLatest {
-                when (it) {
-                    is LocationsState.Error -> {
-                        if (it.message.isNotEmpty()) {
-                            shouldShowErrorOptions(true)
-                            binding.txtError.text = it.message
+        lifecycleScope.launch {
+            viewModel.locationState
+                .flowWithLifecycle(viewLifecycleOwner.lifecycle)
+                .collectLatest {
+                    when (it) {
+                        is LocationsState.Error -> {
+                            if (it.message.isNotEmpty()) {
+                                shouldShowErrorOptions(true)
+                                binding.txtError.text = it.message
+                            }
                         }
-                    }
-                    is LocationsState.Loading -> {
-                        binding.progressBarMap.isVisible = it.isLoading
-                        binding.btnSaveLocation.isVisible = !it.isLoading
-                    }
-                    is LocationsState.Success -> {
-                        it.data.forEach { location ->
-                            map?.addMarker(
-                                MarkerOptions()
-                                    .position(
-                                        LatLng(
-                                            location.latitude.toDouble(),
-                                            location.longitude.toDouble()
+
+                        is LocationsState.Loading -> {
+                            binding.progressBarMap.isVisible = it.isLoading
+                            binding.btnSaveLocation.isVisible = !it.isLoading
+                        }
+
+                        is LocationsState.Success -> {
+                            it.data.forEach { location ->
+                                map?.addMarker(
+                                    MarkerOptions()
+                                        .position(
+                                            LatLng(
+                                                location.latitude.toDouble(),
+                                                location.longitude.toDouble()
+                                            )
                                         )
-                                    )
-                            )
+                                )
+                            }
                         }
+
+                        else -> Unit
                     }
-                    else -> Unit
                 }
-            }
         }
     }
 
@@ -100,12 +107,14 @@ class MapFragment : BaseFragment<FragmentMapBinding>(FragmentMapBinding::inflate
                 PermissionResult.DENIED -> {
                     requestPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
                 }
+
                 PermissionResult.RATIONALE ->
                     showRequestPermissionRationaleAlert(Constants.STORAGE_PERMISSION_REQUIRED) {
                         when (it) {
                             AlertAction.POSITIVE -> {
                                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
                             }
+
                             AlertAction.NEGATIVE -> Unit
                         }
                     }
@@ -132,6 +141,7 @@ class MapFragment : BaseFragment<FragmentMapBinding>(FragmentMapBinding::inflate
                 AlertAction.POSITIVE -> {
                     startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
                 }
+
                 AlertAction.NEGATIVE -> binding.btnSaveLocation.isVisible = false
             }
         }

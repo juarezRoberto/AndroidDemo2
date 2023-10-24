@@ -1,7 +1,14 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    ext.nav_version = "2.5.1"
-    ext.hilt_version = "2.47"
+    ext.nav_version = "2.6.0"
+    ext.hilt_version = "2.48"
+    ext.room_version = "2.5.2"
+    ext.glide_version = "4.16.0"
+    ext.coroutines_version = "1.6.4"
+    ext.lifecycle_version = "2.6.1"
+    ext.firebase_bom_version = "29.0.4"
+    ext.retrofit = "2.9.0"
+
     repositories {
         google()
         mavenCentral()
@@ -20,6 +27,6 @@ buildscript {
     }
 }
 
-task clean(type: Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }

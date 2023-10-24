@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.juarez.upaxdemo.databinding.FragmentMoviesBinding
@@ -39,21 +41,23 @@ class MoviesFragment : BaseFragment<FragmentMoviesBinding>(FragmentMoviesBinding
             viewModel.getTopMovies()
         }
         // observers
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            launch {
-                viewModel.popularMovies.collect { popularMoviesAdapter.submitList(it) }
-            }
-            launch {
-                viewModel.topMovies.collect { topMoviesAdapter.submitList(it) }
-            }
-            launch {
-                viewModel.loading.collect { binding.progressBarMovies.isVisible = it }
-            }
-            launch {
-                viewModel.error.collect {
-                    if (it.isNotEmpty()) {
-                        shouldShowErrorOptions(true)
-                        binding.txtMoviesError.text = it
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.popularMovies.collect { popularMoviesAdapter.submitList(it) }
+                }
+                launch {
+                    viewModel.topMovies.collect { topMoviesAdapter.submitList(it) }
+                }
+                launch {
+                    viewModel.loading.collect { binding.progressBarMovies.isVisible = it }
+                }
+                launch {
+                    viewModel.error.collect {
+                        if (it.isNotEmpty()) {
+                            shouldShowErrorOptions(true)
+                            binding.txtMoviesError.text = it
+                        }
                     }
                 }
             }

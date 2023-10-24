@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
 import com.juarez.upaxdemo.databinding.FragmentMovieDetailBinding
 import com.juarez.upaxdemo.domain.models.Movie
@@ -28,18 +30,21 @@ class MovieDetailFragment :
         }
 
         viewModel.getMovieDetail(args.movieId)
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            launch {
-                viewModel.movie.collect { updateUI(it) }
-            }
-            launch {
-                viewModel.loading.collect { binding.progressMovieDetail.isVisible = it }
-            }
-            launch {
-                viewModel.error.collect {
-                    if (it.isNotEmpty()) {
-                        shouldShowErrorOptions(true)
-                        binding.txtDetailError.text = it
+        
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.movie.collect { updateUI(it) }
+                }
+                launch {
+                    viewModel.loading.collect { binding.progressMovieDetail.isVisible = it }
+                }
+                launch {
+                    viewModel.error.collect {
+                        if (it.isNotEmpty()) {
+                            shouldShowErrorOptions(true)
+                            binding.txtDetailError.text = it
+                        }
                     }
                 }
             }

@@ -9,13 +9,19 @@ import android.webkit.MimeTypeMap
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.juarez.upaxdemo.R
 import com.juarez.upaxdemo.common.Constants
 import com.juarez.upaxdemo.databinding.FragmentPhotoBinding
-import com.juarez.upaxdemo.utils.*
+import com.juarez.upaxdemo.utils.BaseFragment
+import com.juarez.upaxdemo.utils.PermissionResult
+import com.juarez.upaxdemo.utils.hideKeyboard
+import com.juarez.upaxdemo.utils.requestPermission
+import com.juarez.upaxdemo.utils.toast
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
@@ -46,19 +52,22 @@ class PhotoFragment : BaseFragment<FragmentPhotoBinding>(FragmentPhotoBinding::i
             }
             binding.outlinedFilename.editText?.setText("")
         }
-        lifecycleScope.launchWhenStarted {
-            viewModel.savePhotoState.collect {
-                when (it) {
-                    is SavePhotoState.Loading -> {
-                        binding.progressUploadingImg.isVisible = it.isLoading
-                    }
-                    is SavePhotoState.Success -> {
-                        binding.imgFirebase.setImageURI(placeholderImgUri)
-                        showUploadButton()
-                        toast(Constants.FIREBASE_STORAGE_UPLOAD_SUCCESS)
+        lifecycleScope.launch {
+            viewModel.savePhotoState
+                .flowWithLifecycle(viewLifecycleOwner.lifecycle)
+                .collect {
+                    when (it) {
+                        is SavePhotoState.Loading -> {
+                            binding.progressUploadingImg.isVisible = it.isLoading
+                        }
+
+                        is SavePhotoState.Success -> {
+                            binding.imgFirebase.setImageURI(placeholderImgUri)
+                            showUploadButton()
+                            toast(Constants.FIREBASE_STORAGE_UPLOAD_SUCCESS)
+                        }
                     }
                 }
-            }
         }
     }
 
@@ -75,6 +84,7 @@ class PhotoFragment : BaseFragment<FragmentPhotoBinding>(FragmentPhotoBinding::i
                 PermissionResult.DENIED -> {
                     requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
                 }
+
                 PermissionResult.RATIONALE -> showRequestPermissionRationaleAlert()
             }
         }
